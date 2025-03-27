@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Планирование отпусков</title>
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Вход в систему</h1>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label for="employee_id">ID сотрудника:</label>
+                <input type="text" id="employee_id" name="employee_id" required class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Войти</button>
+        </form>
+    </div>
+</body>
+</html>

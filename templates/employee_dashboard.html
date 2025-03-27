@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Панель сотрудника</title>
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Панель сотрудника - {{ employee.name }}</h1>
+        <h2>Отдел: {{ employee.department }}</h2>
+        <p>Доступно дней отпуска: {{ remaining_days }}</p>
+        
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <h3>Запланировать отпуск</h3>
+        <form method="POST" action="/employee/{{ employee.id }}/request_vacation">
+            <div class="form-group">
+                <label for="start_date">Начало:</label>
+                <input type="date" id="start_date" name="start_date" required 
+                       min="{{ now.isoformat() }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="end_date">Конец:</label>
+                <input type="date" id="end_date" name="end_date" required 
+                       min="{{ now.isoformat() }}" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить запрос</button>
+        </form>
+        
+        <h3>Мои отпуска</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Начало</th>
+                    <th>Конец</th>
+                    <th>Дни</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vac in vacations %}
+                <tr>
+                    <td>{{ vac.start }}</td>
+                    <td>{{ vac.end }}</td>
+                    <td>{{ (vac.end - vac.start).days + 1 }}</td>
+                    <td>
+                        <span class="badge badge-{{ 'success' if vac.status == 'approved' else 'warning' if vac.status == 'pending' else 'danger' }}">
+                            {{ vac.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h3>Утвержденные отпуска в отделе {{ employee.department }}</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Сотрудник</th>
+                    <th>Начало</th>
+                    <th>Конец</th>
+                    <th>Дни</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vac in dept_vacations %}
+                <tr>
+                    <td>{{ vac.employee_id }}</td>
+                    <td>{{ vac.start }}</td>
+                    <td>{{ vac.end }}</td>
+                    <td>{{ (vac.end - vac.start).days + 1 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
