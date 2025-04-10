@@ -25,8 +25,8 @@ class Employee(BaseModel):
     total_days: int
 
 class Vacation(BaseModel):
-    start: date
-    end: date
+    start: str | date
+    end: str | date
     employee_id: str
     status: str = "pending"
     submitted_at: str = datetime.now().isoformat()
@@ -60,9 +60,9 @@ def save_data(data: Dict, filename: Path):
 def init_test_data():
     if not EMPLOYEES_FILE.exists():
         employees = {
-            "1": {"name": "Иванов Иван", "department": "IT", "total_days": 28},
-            "2": {"name": "Петров Петр", "department": "IT", "total_days": 28},
-            "3": {"name": "Сидорова Анна", "department": "HR", "total_days": 28}
+            "1": {"id": 1, "name": "Иванов Иван", "department": "IT", "total_days": 28},
+            "2": {"id": 2, "name": "Петров Петр", "department": "IT", "total_days": 28},
+            "3": {"id": 3, "name": "Сидорова Анна", "department": "HR", "total_days": 28}
         }
         save_data(employees, EMPLOYEES_FILE)
     
@@ -132,6 +132,12 @@ async def employee_dashboard(request: Request, employee_id: str):
         raise HTTPException(status_code=404, detail="Сотрудник не найден")
     
     department = employee["department"]
+    
+    remaining_days = get_remaining_days(employee_id, vacations)
+    
+    for i in vacations:
+        vacations[i]["start"] = datetime.strptime(vacations[i]["start"], "%Y-%m-%d")
+        vacations[i]["end"] = datetime.strptime(vacations[i]["end"], "%Y-%m-%d")
     dept_vacations = [
         Vacation(**v) for v in vacations.values() 
         if (v["employee_id"] == employee_id or 
@@ -139,7 +145,6 @@ async def employee_dashboard(request: Request, employee_id: str):
     ]
     
     employee_vacations = [Vacation(**v) for v in vacations.values() if v["employee_id"] == employee_id]
-    remaining_days = get_remaining_days(employee_id, vacations)
     
     return templates.TemplateResponse(
         "employee_dashboard.html",
@@ -186,12 +191,13 @@ async def request_vacation(request: Request, employee_id: str):
         )
     
     new_vacation = Vacation(
-        start=start,
-        end=end,
+        start=start.strftime("%Y-%m-%d"),
+        end=end.strftime("%Y-%m-%d"),
         employee_id=employee_id
     )
     
     # Проверка на 14 дней (если это единственный период)
+    print(vacations.values())
     employee_vacations = [Vacation(**v) for v in vacations.values() if v["employee_id"] == employee_id]
     if not employee_vacations and duration < 14:
         raise HTTPException(
@@ -210,7 +216,7 @@ async def request_vacation(request: Request, employee_id: str):
     
     # Сохраняем новый отпуск
     vacation_id = str(uuid.uuid4())
-    vacations[vacation_id] = new_vacation.dict()
+    vacations[vacation_id] = new_vacation.model_dump()
     save_data(vacations, VACATIONS_FILE)
     
     return RedirectResponse(f"/employee/{employee_id}", status_code=status.HTTP_303_SEE_OTHER)
