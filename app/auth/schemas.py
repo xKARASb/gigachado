@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, UUID4
 
 
 class TokenResponse(BaseModel):
+    id: UUID4
     access_token: str
     refresh_token: str
     token_type: str
@@ -13,7 +14,7 @@ class AccesTokenRequest(BaseModel):
 
 class RefreshTokenRequestForm(BaseModel):
     refresh_token: str
-    id: str
+    id: UUID4
   
 
 class AccessTokenRequestForm(BaseModel):
@@ -36,11 +37,11 @@ class EmployeeRegistrationForm(BaseModel):
     vacation_days: int = Field(default=28)
     additional_days: int = Field(default=0)
 
-    dep_id: int = Field()
+    deps_id: UUID4 = Field()
     post: str = Field()
     
     
 class EmployeeRegistrationResponse(BaseModel):
-    id: int
+    id: UUID4
     name: str
     last_name: str

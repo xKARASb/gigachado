@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, UUID4
     
         
 class EmployeeInput(BaseModel):
@@ -14,18 +14,19 @@ class EmployeeInput(BaseModel):
     vacation_days: int = Field(default=28)
     additional_days: int = Field(default=0)
 
-    dep_id: int = Field()
+    deps_id: UUID4 = Field()
     post: str = Field()
 
 
 class EmployeeOutput(BaseModel):
-    id: int
+    id: UUID4
     name: str
     last_name: str
     patronymic: str
     
     password: str
     refresh_token: str | None = None
+    is_admin: bool
     
     email: str | None
     tg: str | None
@@ -33,5 +34,5 @@ class EmployeeOutput(BaseModel):
     vacation_days: int
     additional_days: int
     
-    dep_id: int = Field()
+    deps_id: UUID4 = Field()
     post: str = Field()

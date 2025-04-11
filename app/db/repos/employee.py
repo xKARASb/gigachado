@@ -9,7 +9,7 @@ class EmployeeRepository:
         self.session = session
 
     def create(self, data: EmployeeInput) -> EmployeeOutput:
-        employee = Employee(**data.model_dump(exclude_none=True))
+        employee = Employee(**data.model_dump())
         print(employee)
         self.session.add(employee)
         self.session.commit()

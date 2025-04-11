@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Annotated
 
 from os import getenv
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -9,7 +10,7 @@ from .schemas import TokenResponse, RefreshTokenRequestForm, AccessTokenRequestF
 from sqlalchemy.orm import Session
 from ..db import get_db
 from ..db.repos import EmployeeRepository
-from ..db.schemas.employee import EmployeeInput
+from ..db.schemas.employee import EmployeeInput, EmployeeOutput
 
 load_dotenv("./app/cfg/auth.env")
 
@@ -24,6 +25,7 @@ auth_router = APIRouter(
 @auth_router.post("/registration", response_model=EmployeeRegistrationResponse)
 async def new_user(
     data: EmployeeRegistrationForm,
+    # user: Annotated[EmployeeOutput, Depends(get_current_active_user)],
     session: Session = Depends(get_db)
 ):
     new_user = EmployeeInput(
@@ -42,7 +44,7 @@ async def login_for_access_token(
     form_data: AccessTokenRequestForm,
     session: Session = Depends(get_db)
 ) -> TokenResponse:
-    user = await authenticate_user(form_data.first, form_data.password, session)
+    user = await authenticate_user(form_data.firstname, form_data.lastname, form_data.patronymic, form_data.password, session)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -51,17 +53,17 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"id": user.id, "password": user.password}, expires_delta=access_token_expires
+        data={"id": str(user.id), "password": user.password}, expires_delta=access_token_expires
     )
     refresh_token = await create_refresh_token(user, session)
-    return TokenResponse(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
+    return TokenResponse(id=user.id, access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
 @auth_router.post("/refresh", response_model=TokenResponse)
 async def refresh_access_token(
     form_data: RefreshTokenRequestForm,
     session: Session = Depends(get_db)
 ) -> TokenResponse:
-    user = await refresh_token_user(form_data.email, form_data.refresh_token, session)
+    user = await refresh_token_user(form_data.id, form_data.refresh_token, session)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -70,7 +72,7 @@ async def refresh_access_token(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"id": user.id, "password": user.password}, expires_delta=access_token_expires
+        data={"id": str(user.id), "password": user.password}, expires_delta=access_token_expires
     )
     refresh_token = await create_refresh_token(user, session)
-    return TokenResponse(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
+    return TokenResponse(id=user.id, access_token=access_token, refresh_token=refresh_token, token_type="bearer")
