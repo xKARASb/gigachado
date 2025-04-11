@@ -1,18 +1,15 @@
 from datetime import timedelta
-# from typing import Annotated
 
 from os import getenv
 from fastapi import APIRouter, Depends, HTTPException, status
 from dotenv import load_dotenv
-from .auth import authenticate_user, create_access_token, refresh_token_user, create_refresh_token, get_current_active_user
-from .schemas import TokenResponse, RefreshTokenRequestForm, AccessTokenRequestForm
+from .auth import authenticate_user, create_access_token, refresh_token_user, create_refresh_token, user_password_hash, get_current_active_user
+from .schemas import TokenResponse, RefreshTokenRequestForm, AccessTokenRequestForm, EmployeeRegistrationForm, EmployeeRegistrationResponse
 
 from sqlalchemy.orm import Session
 from ..db import get_db
-# from db.repos import EmployeeRepository
-# from db.schemas.employee import EmployeeInput
-# from ..repository.db import get_db, UserRepository
-# from ..repository.db.schemas.auth import UserInput
+from ..db.repos import EmployeeRepository
+from ..db.schemas.employee import EmployeeInput
 
 load_dotenv("./app/cfg/auth.env")
 
@@ -24,27 +21,21 @@ auth_router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# @auth_router.post("/registration", response_model=UserRegistrationResponse)
-# async def new_user(
-#     data: UserRegistrationForm,
-#     session: Session = Depends(get_db)
-# ):
-#     new_user = UserInput(
-#         email=data.email,
-#         fullname=data.fullname,
-#         password=data.password
-#     )
-#     if UserRepository(session).user_exists_by_email(new_user.email):
-#         raise HTTPException(
-#             status_code=status.HTTP_409_CONFLICT,
-#             detail="User with this email already exsist",
-#         )
-#     user = UserRepository(session).create(await user_password_hash(new_user))
-#     return UserRegistrationResponse(
-#         id=user.id,
-#         email=user.email,
-#         fullname=user.fullname
-#     )
+@auth_router.post("/registration", response_model=EmployeeRegistrationResponse)
+async def new_user(
+    data: EmployeeRegistrationForm,
+    session: Session = Depends(get_db)
+):
+    new_user = EmployeeInput(
+        **data.model_dump()
+    )
+    
+    user = EmployeeRepository(session).create(await user_password_hash(new_user))
+    return EmployeeRegistrationResponse(
+        id=user.id,
+        name=user.name,
+        last_name=user.last_name
+    )
 
 @auth_router.post("/token", response_model=TokenResponse)
 async def login_for_access_token(

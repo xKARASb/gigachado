@@ -14,6 +14,9 @@ class EmployeeInput(BaseModel):
     vacation_days: int = Field(default=28)
     additional_days: int = Field(default=0)
 
+    dep_id: int = Field()
+    post: str = Field()
+
 
 class EmployeeOutput(BaseModel):
     id: int
@@ -29,3 +32,6 @@ class EmployeeOutput(BaseModel):
     
     vacation_days: int
     additional_days: int
+    
+    dep_id: int = Field()
+    post: str = Field()
