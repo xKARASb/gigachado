@@ -26,7 +26,7 @@ class EmployeeOutput(BaseModel):
     
     password: str
     refresh_token: str | None = None
-    is_admin: bool
+    role: int
     
     email: str | None
     tg: str | None

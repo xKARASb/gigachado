@@ -1,5 +1,5 @@
 from .. import Base
-from sqlalchemy import Column, String, Integer, Uuid, Boolean, ForeignKey
+from sqlalchemy import Column, String, Integer, Uuid, ForeignKey
 from sqlalchemy.orm import mapped_column
 from uuid import uuid4
 
@@ -18,7 +18,7 @@ class Employee(Base):
     email = Column(String)
     tg = Column(String, unique=True)
     
-    is_admin = Column(Boolean, default=False)
+    role = Column(int, default=0)
     vacation_days = Column(Integer, default=28)
     additional_days = Column(Integer, default=0)
 
