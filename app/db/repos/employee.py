@@ -22,15 +22,21 @@ class EmployeeRepository:
         Employees = self.session.query(Employee).all()
         return [EmployeeOutput(**Employee.__dict__) for Employee in Employees]
 
+    def get_by_dep(self, id: str) -> List[Optional[EmployeeOutput]]:
+        Employees = self.session.query(Employee).filter_by(deps_id=id).all()
+        return [EmployeeOutput(**Employee.__dict__) for Employee in Employees]
+
     def get_by_fullname(self, first_name: str, last_name: str, patronymic: str) -> EmployeeOutput:
         Employees = self.session.query(Employee).filter_by(name=first_name, last_name=last_name, patronymic=patronymic).all()
         return [EmployeeOutput(**Employee.__dict__) for Employee in Employees]
         
-    def get_employee(self, _id: int) -> EmployeeOutput:
+    def get_employee(self, _id: str) -> EmployeeOutput:
         employee = self.session.query(Employee).filter_by(id=_id).first()
-        return EmployeeOutput(**employee.__dict__)
-
-    def get_by_id(self, _id: int) -> Type[Employee]:
+        if employee:
+            return EmployeeOutput(**employee.__dict__)
+        return None
+     
+    def get_by_id(self, _id: str) -> Type[Employee]:
         return self.session.query(Employee).filter_by(id=_id).first()
 
     def Employee_exists_by_id(self, _id: int) -> bool:

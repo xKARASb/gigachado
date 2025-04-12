@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..db.repos import DepsRepository, EmployeeRepository
 from ..db.schemas.employee import EmployeeInput
-from ..auth import user_password_hash
+from ..auth.auth import user_password_hash
 
 from .schemas import DepCreateForm, EmployeeRegistrationForm, EmployeeRegistrationResponse
 
@@ -36,5 +36,6 @@ async def new_user(
     return EmployeeRegistrationResponse(
         id=user.id,
         name=user.name,
-        last_name=user.last_name
+        last_name=user.last_name,
+        role=user.role
     )

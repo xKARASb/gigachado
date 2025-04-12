@@ -10,6 +10,7 @@ class EmployeeInput(BaseModel):
     
     email: str | None = Field()
     tg: str | None = Field()
+    role: int = Field(default=0)
     
     vacation_days: int = Field(default=28)
     additional_days: int = Field(default=0)

@@ -15,7 +15,6 @@ class VacationRequest(Base):
     manager_comment = Column(Text, nullable=True)
     employee_id = mapped_column(ForeignKey("employee.id"))
     dep_id = mapped_column(ForeignKey("deps.id"))
-    vacation_id = mapped_column(ForeignKey("vacation.id"))
 
     created_at = Column(DateTime, default=dt.now)
     updated_at = Column(DateTime, default=dt.now, onupdate=dt.now)

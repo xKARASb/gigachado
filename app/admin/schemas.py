@@ -8,10 +8,11 @@ class EmployeeRegistrationForm(BaseModel):
     last_name: str = Field()
     patronymic: str = Field()
     
-    password: str = Field()
+    password: str = Field() 
     
     email: str | None = Field()
     tg: str | None = Field()
+    role: int = Field()
     
     vacation_days: int = Field(default=28)
     additional_days: int = Field(default=0)
@@ -24,3 +25,4 @@ class EmployeeRegistrationResponse(BaseModel):
     id: UUID4
     name: str
     last_name: str
+    role: int

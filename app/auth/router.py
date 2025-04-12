@@ -25,7 +25,7 @@ auth_router = APIRouter(
 @auth_router.post("/registration", response_model=EmployeeRegistrationResponse)
 async def new_user(
     data: EmployeeRegistrationForm,
-    # user: Annotated[EmployeeOutput, Depends(get_current_active_user)],
+    user: Annotated[EmployeeOutput, Depends(get_current_active_user)],
     session: Session = Depends(get_db)
 ):
     new_user = EmployeeInput(

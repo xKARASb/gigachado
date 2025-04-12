@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from ..models import Deps
 from ..schemas.deps import DepInput, DepOutput
-# from typing import List, Optional, Type
 
 
 class DepsRepository:
@@ -17,3 +16,7 @@ class DepsRepository:
         return DepOutput(
             **dep.__dict__
         )
+    
+    def get_all(self) -> DepOutput:
+        deps = self.session.query(Deps).all()
+        return [DepOutput(**dep.__dict__) for dep in deps]

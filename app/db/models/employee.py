@@ -16,9 +16,9 @@ class Employee(Base):
     patronymic = Column(String)
     
     email = Column(String)
-    tg = Column(String, unique=True)
+    tg = Column(String)
     
-    role = Column(int, default=0)
+    role = Column(Integer, default=0)
     vacation_days = Column(Integer, default=28)
     additional_days = Column(Integer, default=0)
 

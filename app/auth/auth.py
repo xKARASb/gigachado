@@ -1,6 +1,7 @@
 from os import getenv
 
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -69,13 +70,13 @@ async def get_current_user(token: Annotated[str, Depends(oauth2scheme)]):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         print(payload)
-        id: str = payload.get("id")
+        id: str = UUID(payload.get("id"))
         print(id)
         if id is None:
             raise credentials_exception
     except InvalidTokenError:
         raise credentials_exception
-    user = EmployeeRepository(next(get_db())).get_user(id)
+    user = EmployeeRepository(next(get_db())).get_employee(id)
     if user is None:
         raise credentials_exception
     return user
