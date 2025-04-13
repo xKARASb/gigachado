@@ -28,6 +28,7 @@ class EmployeeRegistrationForm(BaseModel):
     name: str = Field()
     last_name: str = Field()
     patronymic: str = Field()
+    tabel_number: int = Field()
     
     password: str = Field()
     

@@ -20,3 +20,7 @@ class DepsRepository:
     def get_all(self) -> DepOutput:
         deps = self.session.query(Deps).all()
         return [DepOutput(**dep.__dict__) for dep in deps]
+
+    def get_by_id(self, id) -> DepOutput | None:
+        return self.session.query(Deps).filter_by(id=id).first()
+        

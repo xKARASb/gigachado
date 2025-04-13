@@ -13,6 +13,7 @@ class EmployeeRegistrationForm(BaseModel):
     email: str | None = Field()
     tg: str | None = Field()
     role: int = Field()
+    tabel_number: int = Field()
     
     vacation_days: int = Field(default=28)
     additional_days: int = Field(default=0)

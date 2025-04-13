@@ -14,6 +14,7 @@ class Employee(Base):
     name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     patronymic = Column(String)
+    tabel_number = Column(Integer, nullable=False)
     
     email = Column(String)
     tg = Column(String)
